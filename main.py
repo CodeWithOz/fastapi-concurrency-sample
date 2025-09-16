@@ -1,3 +1,4 @@
+import asyncio
 from time import sleep
 from fastapi import FastAPI
 from fastapi.background import BackgroundTasks
@@ -23,6 +24,7 @@ async def upload_to_s3():
 @app.get("/process-files")
 async def process_files(background_tasks: BackgroundTasks):
     logger.info("Before process files")
-    background_tasks.add_task(upload_to_s3)
+    task = asyncio.create_task(upload_to_s3())
+    # background_tasks.add_task(upload_to_s3)
     logger.info("After process files")
     return {"ok": True}

@@ -1,5 +1,6 @@
 from time import sleep
 from fastapi import FastAPI
+from fastapi.background import BackgroundTasks
 import logging
 
 
@@ -13,12 +14,15 @@ app = FastAPI()
 
 
 async def upload_to_s3():
-    # assume the upload will take 5 seconds
+    # assume the upload will run synchronously for 5 seconds
+    logger.info("Before sleep")
     sleep(5)
+    logger.info("After sleep")
 
 
 @app.get("/process-files")
-async def process_files():
+async def process_files(background_tasks: BackgroundTasks):
     logger.info("Before process files")
-    await upload_to_s3()
+    background_tasks.add_task(upload_to_s3)
     logger.info("After process files")
+    return {"ok": True}
